@@ -1,12 +1,14 @@
 # wordgen
 
-`wordgen` is a Go package that generates random words from a given wordlist.
+wordgen is a Go package that generates random words from a given wordlist. It
+allows you to specify the number of words, their casing, and the separator
+between them.
 
 ## Installation
 
 To install the package, use `go get`:
 
-```
+```shell
 go get github.com/wordgen/wordgen
 ```
 
@@ -18,7 +20,7 @@ Import the package in your Go code:
 import "github.com/wordgen/wordgen"
 ```
 
-Use the `WordGenerator` function to generate random words:
+Use the `Generator` struct and its `Generate` method to generate random words:
 
 ```go
 package main
@@ -30,36 +32,23 @@ import (
 
 func main() {
     wordlist := []string{"apple", "banana", "cherry", "date"}
-    result, err := wordgen.WordGenerator(wordlist, 5, "title", "-")
-	
+
+    gen := wordgen.NewGenerator()
+    gen.Words = wordlist
+    gen.Count = 5
+    gen.Casing = "title"
+    gen.Separator = "-"
+
+    result, err := gen.Generate()
+
     if err != nil {
         fmt.Println("Error:", err)
         return
     }
-	
+
     fmt.Println("Generated words:", result)
 }
 ```
-
-## WordGenerator Function
-
-`WordGenerator` generates a specified number of random words from the given
-wordlist, applies the specified case transformation ("upper", "title", "lower"),
-and joins them with the specified separator. If the casing is an empty string,
-it writes the word directly to the string builder.
-
-**Parameters:**
-
-- `list []string`: The wordlist to generate words from.
-- `count int`: The number of words to generate.
-- `casing string`: The case transformation to apply
-  ("upper", "title", "lower", or empty for no transformation).
-- `separator string`: The separator to use between words.
-
-**Returns:**
-
-- A string of generated words and nil, or an empty string and an error if the
-  wordlist is empty or if random number generation fails.
 
 ## Wordlists Package and CLI Tool
 
