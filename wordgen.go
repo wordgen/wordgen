@@ -25,30 +25,45 @@ import (
 	"golang.org/x/text/language"
 )
 
-// WordGenerator generates a specified number of random words from the given wordlist,
-// applies the specified case transformation ("upper", "title", "lower"), and joins
-// them with the specified separator. If the casing is an empty string, it writes the
-// word directly to the string builder.
-//
-// Returns a string of generated words and nil, or an empty string and an error if the
-// wordlist is empty or if random number generation fails.
-func WordGenerator(list []string, count int, casing, separator string) (string, error) {
-	if len(list) == 0 {
-		return "", fmt.Errorf("ERROR: list cannot be empty")
+// Generator is used to generate random words from a provided wordlist with
+// customizable options for the number of words, casing, and separator.
+type Generator struct {
+	Words     []string
+	Count     int
+	Casing    string
+	Separator string
+}
+
+// NewGenerator initializes and returns a new Generator with default settings.
+func NewGenerator() (g Generator) {
+	g.Words = []string{}
+	g.Count = 1
+	g.Casing = ""
+	g.Separator = " "
+
+	return g
+}
+
+// Generate creates a string composed of random words from the Generator's wordlist.
+// The number of words, casing, and separator are determined by the Generator's settings.
+// Returns an error if the wordlist is empty or if random number generation fails.
+func (g Generator) Generate() (string, error) {
+	if len(g.Words) == 0 {
+		return "", fmt.Errorf("ERROR: wordlist cannot be empty")
 	}
 
 	var b strings.Builder
 
-	for i := 0; i < count; i++ {
-		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(list))))
+	for i := 0; i < g.Count; i++ {
+		randomNum, err := rand.Int(rand.Reader, big.NewInt(int64(len(g.Words))))
 
 		if err != nil {
 			return "", fmt.Errorf("ERROR: failed to generate random number: %v", err)
 		}
 
-		randomWord := list[int(n.Int64())]
+		randomWord := g.Words[int(randomNum.Int64())]
 
-		switch casing {
+		switch g.Casing {
 		case "upper":
 			b.WriteString(cases.Upper(language.English).String(randomWord))
 		case "title":
@@ -59,8 +74,8 @@ func WordGenerator(list []string, count int, casing, separator string) (string, 
 			b.WriteString(randomWord)
 		}
 
-		if i < count-1 {
-			b.WriteString(separator)
+		if i < g.Count-1 {
+			b.WriteString(g.Separator)
 		}
 	}
 
