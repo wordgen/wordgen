@@ -1,5 +1,7 @@
 # wordgen
 
+[![badge][badge-url]][pkg-url]
+
 wordgen is a Go package that generates random words from a given wordlist. It
 allows you to specify the number of words, their casing, and the separator
 between them.
@@ -73,6 +75,8 @@ All files in this repository are licensed under the GNU Affero General Public
 License v3.0 or later - see the [LICENSE] file for details.
 
 <!-- links --->
+[badge-url]: https://pkg.go.dev/badge/github.com/wordgen/wordgen.svg
+[pkg-url]: https://pkg.go.dev/github.com/wordgen/wordgen
 [wordlists package]: https://github.com/wordgen/wordlists
 [command-line tool]: https://github.com/wordgen/cli
 [Conventional Commits]: https://conventionalcommits.org
