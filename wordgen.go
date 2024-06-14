@@ -61,7 +61,7 @@ func (g Generator) Generate() (string, error) {
 			return "", fmt.Errorf("ERROR: failed to generate random number: %v", err)
 		}
 
-		randomWord := g.Words[int(randomNum.Int64())]
+		randomWord := g.Words[randomNum.Int64()]
 
 		switch g.Casing {
 		case "upper":
