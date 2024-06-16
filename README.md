@@ -74,7 +74,7 @@ Ensure your commit messages and pull request titles follow the
 All files in this repository are licensed under the GNU Affero General Public
 License v3.0 or later - see the [LICENSE] file for details.
 
-<!-- links --->
+<!-- links -->
 [badge-url]: https://pkg.go.dev/badge/github.com/wordgen/wordgen.svg
 [pkg-url]: https://pkg.go.dev/github.com/wordgen/wordgen
 [wordlists package]: https://github.com/wordgen/wordlists
