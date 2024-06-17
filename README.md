@@ -28,27 +28,28 @@ Use the `Generator` struct and its `Generate` method to generate random words:
 package main
 
 import (
-    "fmt"
-    "github.com/wordgen/wordgen"
+	"fmt"
+	"github.com/wordgen/wordgen"
 )
 
 func main() {
-    wordlist := []string{"apple", "banana", "cherry", "date"}
+	wordlist := []string{"apple", "banana", "cherry", "date"}
 
-    gen := wordgen.NewGenerator()
-    gen.Words = wordlist
-    gen.Count = 5
-    gen.Casing = "title"
-    gen.Separator = "-"
+	gen := wordgen.NewGenerator()
+	gen.Words = wordlist
+	gen.Count = 5
+	gen.Casing = "title"
+	gen.Separator = "-"
+	gen.Language = language.English
 
-    result, err := gen.Generate()
+	result, err := gen.Generate()
 
-    if err != nil {
-        fmt.Println("Error:", err)
-        return
-    }
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-    fmt.Println("Generated words:", result)
+	fmt.Println("Generated words:", result)
 }
 ```
 
