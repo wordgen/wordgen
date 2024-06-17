@@ -25,7 +25,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-// Generator is a struct that holds configuration for generating words.
+// Generator is a struct that holds the configuration for generating words.
 type Generator struct {
 	Words     []string     // List of words to choose from.
 	Count     int          // Number of words to generate.
@@ -48,7 +48,7 @@ func NewGenerator() (g Generator) {
 // Generate creates a string of randomly chosen words based on the Generator configuration.
 func (g Generator) Generate() (string, error) {
 	if len(g.Words) == 0 {
-		return "", fmt.Errorf("ERROR: wordlist cannot be empty")
+		return "", fmt.Errorf("wordlist cannot be empty")
 	}
 
 	var b strings.Builder
@@ -57,7 +57,7 @@ func (g Generator) Generate() (string, error) {
 		randomNum, err := rand.Int(rand.Reader, big.NewInt(int64(len(g.Words))))
 
 		if err != nil {
-			return "", fmt.Errorf("ERROR: failed to generate random number: %v", err)
+			return "", fmt.Errorf("failed to generate random number: %v", err)
 		}
 
 		randomWord := g.Words[randomNum.Int64()]
