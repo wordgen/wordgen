@@ -51,32 +51,29 @@ func (g Generator) Generate() (string, error) {
 		return "", fmt.Errorf("wordlist cannot be empty")
 	}
 
-	var b strings.Builder
+	words := make([]string, g.Count)
+	var caser func(string) string
+
+	switch g.Casing {
+	case "upper":
+		caser = cases.Upper(g.Language).String
+	case "title":
+		caser = cases.Title(g.Language).String
+	case "lower":
+		caser = cases.Lower(g.Language).String
+	default:
+		caser = func(s string) string { return s }
+	}
 
 	for i := 0; i < g.Count; i++ {
 		randomNum, err := rand.Int(rand.Reader, big.NewInt(int64(len(g.Words))))
-
 		if err != nil {
 			return "", fmt.Errorf("failed to generate random number: %v", err)
 		}
 
 		randomWord := g.Words[randomNum.Int64()]
-
-		switch g.Casing {
-		case "upper":
-			b.WriteString(cases.Upper(g.Language).String(randomWord))
-		case "title":
-			b.WriteString(cases.Title(g.Language).String(randomWord))
-		case "lower":
-			b.WriteString(cases.Lower(g.Language).String(randomWord))
-		default:
-			b.WriteString(randomWord)
-		}
-
-		if i < g.Count-1 {
-			b.WriteString(g.Separator)
-		}
+		words[i] = caser(randomWord)
 	}
 
-	return b.String(), nil
+	return strings.Join(words, g.Separator), nil
 }
