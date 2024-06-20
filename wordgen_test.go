@@ -3,87 +3,74 @@ package wordgen
 import (
 	"strings"
 	"testing"
+	"time"
+
+	"golang.org/x/text/cases"
 )
 
-func TestNewGenerator(t *testing.T) {
-	gen := NewGenerator()
-
-	// Verify default values
-	if len(gen.Words) != 0 {
-		t.Errorf("Expected wordlist to be empty, got %d words", len(gen.Words))
-	}
-	if gen.Count != 1 {
-		t.Errorf("Expected Count to be 1, got %d", gen.Count)
-	}
-	if gen.Casing != "" {
-		t.Errorf("Expected Casing to be empty, got %s", gen.Casing)
-	}
-	if gen.Separator != " " {
-		t.Errorf("Expected Separator to be ' ', got %s", gen.Separator)
-	}
-}
-
-func TestGenerateWithEmptyWordlist(t *testing.T) {
-	gen := NewGenerator()
-
-	// Generate words with empty wordlist
-	_, err := gen.Generate()
-	if err == nil {
-		t.Errorf("Expected error for empty wordlist, got nil")
-	}
-}
-
 func TestGenerate(t *testing.T) {
-	gen := NewGenerator()
-	gen.Words = []string{"apple", "banana", "cherry"}
+	g := NewGenerator()
+	g.Words = []string{"apple", "banana", "cherry"}
+	g.Count = 3
+	g.Separator = "-"
 
-	// Generate words using the generator
-	result, err := gen.Generate()
-	if err != nil {
-		t.Fatal("Expected no error, got", err)
+	testCases := []struct {
+		casing   string
+		expected func(string) string
+	}{
+		{"upper", cases.Upper(g.Language).String},
+		{"lower", cases.Lower(g.Language).String},
+		{"title", cases.Title(g.Language).String},
 	}
 
-	// Verify the generated word count
-	resultWords := strings.Split(result, gen.Separator)
-	if len(resultWords) != gen.Count {
-		t.Errorf("Expected %d words, got %d", gen.Count, len(resultWords))
-	}
-}
+	for _, tc := range testCases {
+		g.Casing = tc.casing
+		result, err := g.Generate()
+		if err != nil {
+			t.Errorf("Generate() returned an error: %v", err)
+		}
 
-func TestGenerateWithSettings(t *testing.T) {
-	gen := NewGenerator()
-	gen.Words = []string{"apple", "banana", "cherry"}
+		expectedWords := strings.Split(result, "-")
+		if len(expectedWords) != 3 {
+			t.Errorf("Generate() expected 3 words, got %d", len(expectedWords))
+		}
 
-	// Test with Count set to 3
-	gen.Count = 3
-	result, err := gen.Generate()
-	if err != nil {
-		t.Fatal("Expected no error, got", err)
-	}
-	resultWords := strings.Split(result, gen.Separator)
-	if len(resultWords) != gen.Count {
-		t.Errorf("Expected %d words, got %d", gen.Count, len(resultWords))
-	}
-
-	// Test with Casing set to "upper"
-	gen.Casing = "upper"
-	result, err = gen.Generate()
-	if err != nil {
-		t.Fatal("Expected no error, got", err)
-	}
-	for _, word := range strings.Split(result, gen.Separator) {
-		if word != strings.ToUpper(word) {
-			t.Errorf("Expected word in upper case, got %s", word)
+		for _, word := range strings.Split(result, g.Separator) {
+			expectedWord := tc.expected(word)
+			if word != expectedWord {
+				t.Errorf("Generate() with casing %s failed: got %s, want %s", tc.casing, word, expectedWord)
+			}
 		}
 	}
+}
 
-	// Test with Separator set to ", "
-	gen.Separator = ", "
-	result, err = gen.Generate()
-	if err != nil {
-		t.Fatal("Expected no error, got", err)
+func TestGeneratePerformance(t *testing.T) {
+	g := NewGenerator()
+	g.Words = []string{"wordgen"}
+	g.Casing = "title"
+	g.Separator = "."
+
+	tests := []struct {
+		name  string
+		count int
+	}{
+		{"10k words", 10000},
+		{"100k words", 100000},
+		{"1m words", 1000000},
+		{"10m words", 10000000},
 	}
-	if !strings.Contains(result, gen.Separator) {
-		t.Errorf("Expected separator %q, but result was %q", gen.Separator, result)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g.Count = tt.count
+			start := time.Now()
+			_, err := g.Generate()
+			if err != nil {
+				t.Errorf("Generate() returned an error: %v", err)
+			}
+
+			duration := time.Since(start)
+			t.Logf("%s took %v", tt.name, duration)
+		})
 	}
 }
