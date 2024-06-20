@@ -30,23 +30,23 @@ type Generator struct {
 	Words     []string     // List of words to choose from.
 	Count     int          // Number of words to generate.
 	Casing    string       // Letter casing: upper, title, lower, or "" (no casing).
-	Language  language.Tag // Language tag for casing transformations.
 	Separator string       // String used to separate generated words.
+	Language  language.Tag // Language tag for casing transformations.
 }
 
 // NewGenerator initializes a new Generator with default values.
-func NewGenerator() (g Generator) {
-	g.Words = []string{}
-	g.Count = 1
-	g.Casing = ""
-	g.Separator = " "
-	g.Language = language.English
-
-	return g
+func NewGenerator() *Generator {
+	return &Generator{
+		Words:     []string{},
+		Count:     1,
+		Casing:    "",
+		Separator: " ",
+		Language:  language.English,
+	}
 }
 
 // Generate creates a string of randomly chosen words based on the Generator configuration.
-func (g Generator) Generate() (string, error) {
+func (g *Generator) Generate() (string, error) {
 	if len(g.Words) == 0 {
 		return "", fmt.Errorf("wordlist cannot be empty")
 	}
@@ -65,8 +65,10 @@ func (g Generator) Generate() (string, error) {
 		caser = func(s string) string { return s }
 	}
 
+	maxNum := big.NewInt(int64(len(g.Words)))
+
 	for i := 0; i < g.Count; i++ {
-		randomNum, err := rand.Int(rand.Reader, big.NewInt(int64(len(g.Words))))
+		randomNum, err := rand.Int(rand.Reader, maxNum)
 		if err != nil {
 			return "", fmt.Errorf("failed to generate random number: %v", err)
 		}
